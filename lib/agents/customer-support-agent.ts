@@ -2,13 +2,16 @@
 import OpenAI from "openai";
 import { 
   BaseAgent, 
-  AgentType, 
-  AgentCapability,
-  Message,
-  ConversationContext,
   TaskResult,
   TaskPriority
 } from './base-agent';
+import { 
+  AgentType,
+  AgentCapability,
+  Message,
+  ConversationContext,
+  generateId 
+} from '../types/agent-types';
 import { generateId } from '../types/agent-types';
 import { logger, LogCategory } from '../logging/comprehensive-logger';
 import { errorHandler, ErrorCategory, ErrorSeverity } from '../error-handling/enhanced-error-handler';
