@@ -96,9 +96,13 @@ export class OptimizedAIProcessor {
     userId?: string
   ): Promise<string> {
     const startTime = Date.now();
-    const conversationId = generateId();
+    let conversationId: string = '';
     
     try {
+      // Get or create conversation context
+      const context = this.getOrCreateContext(sessionId, userId);
+      conversationId = context.id;
+
       logger.info(LogCategory.AI, 'Starting optimized AI processing', {
         messageCount: messages.length,
         sessionId,
@@ -108,9 +112,6 @@ export class OptimizedAIProcessor {
       
       // Update metrics
       this.performanceMetrics.totalRequests++;
-      
-      // Get or create conversation context
-      const context = this.getOrCreateContext(conversationId, sessionId, userId);
       
       // Add messages to context
       context.messages.push(...messages);
@@ -288,8 +289,7 @@ Analyze user messages with contextual awareness and travel psychology to extract
     "rooms": 1
   },
   "preferences": ["preference_list"],
-  "urgency": "low|medium|high",
-  "confidence": 0.8
+  "urgency": "low|medium|high"
 }
 
 **Quality Standards:**
@@ -320,7 +320,6 @@ Extract comprehensive travel intent with high accuracy. Return ONLY the JSON obj
             model: optimizedConfig.model,
             temperature: 0.1,
             max_tokens: 600,
-            timeout: optimizedConfig.timeout,
           });
         },
         'optimized_intent_analysis',
@@ -356,10 +355,10 @@ Extract comprehensive travel intent with high accuracy. Return ONLY the JSON obj
       // Return default intent with low confidence
       return {
         intent: 'unknown',
-        destination: null,
-        duration: null,
-        planType: null,
-        budget: { min: null, max: null, currency: 'INR' },
+        destination: undefined,
+        duration: undefined,
+        planType: undefined,
+        budget: { min: undefined, max: undefined, currency: 'INR' },
         travelers: { adults: 1, children: 0, rooms: 1 },
         preferences: [],
         urgency: 'medium',
@@ -385,13 +384,8 @@ Extract comprehensive travel intent with high accuracy. Return ONLY the JSON obj
         conversationId: context.id,
       });
       
-      // Check what information we have and what we need
-      const missingInfo = [];
-      if (!destination) missingInfo.push('destination');
-      if (!duration) missingInfo.push('duration');
-      
       // If we have all required info, fetch packages
-      if (missingInfo.length === 0) {
+      if (typeof destination === 'string' && typeof duration === 'number') {
         logger.info(LogCategory.TOOL, `Fetching packages: ${destination}, ${duration} days, ${planType || 'any'}`);
         
         // Use enhanced tool execution with high priority
@@ -399,7 +393,7 @@ Extract comprehensive travel intent with high accuracy. Return ONLY the JSON obj
           'get_packages',
           { 
             search: destination,
-            days: duration 
+            days: duration
           },
           {
             sessionId: context.sessionId,
@@ -409,14 +403,17 @@ Extract comprehensive travel intent with high accuracy. Return ONLY the JSON obj
           }
         );
         
-        if (!toolResult.success || !toolResult.data || toolResult.data.length === 0) {
+        if (!toolResult.success || !toolResult.data || !toolResult.data.packages || toolResult.data.packages.length === 0) {
           return await this.generateNoPackagesResponseOptimized(destination, duration, planType, context);
         }
         
-        return await this.formatPackagesResponseOptimized(toolResult.data, destination, duration, planType, context);
+        return await this.formatPackagesResponseOptimized(toolResult.data.packages, destination, duration, planType, context);
       }
       
-      // Generate natural follow-up questions for missing information
+      // If we don't have the required info, ask for it
+      const missingInfo = [];
+      if (!destination) missingInfo.push('destination');
+      if (!duration) missingInfo.push('duration');
       return await this.generateFollowUpQuestionOptimized(intent, missingInfo, context);
 
     } catch (error) {
@@ -515,7 +512,6 @@ Create a response that positions you as the trusted travel expert while providin
             model: optimizedConfig.model,
             temperature: 0.6,
             max_tokens: 600,
-            timeout: optimizedConfig.timeout,
           });
         },
         'optimized_general_query',
@@ -640,9 +636,9 @@ Ask for the MOST important missing piece of information with encouraging languag
   }
 
   private async generateNoPackagesResponseOptimized(
-    destination: string | null, 
-    duration: number | null, 
-    planType: string | null,
+    destination: string, 
+    duration: number, 
+    planType: string | undefined,
     context: ConversationContext
   ): Promise<string> {
     const planText = planType ? ` for ${planType} trips` : '';
@@ -653,9 +649,9 @@ Ask for the MOST important missing piece of information with encouraging languag
 
   private async formatPackagesResponseOptimized(
     packages: any, 
-    destination: string | null, 
-    duration: number | null, 
-    planType: string | null,
+    destination: string, 
+    duration: number, 
+    planType: string | undefined,
     context: ConversationContext
   ): Promise<string> {
     try {
@@ -702,7 +698,6 @@ Present maximum 5 packages with personalized language and compelling calls-to-ac
             model: optimizedConfig.model,
             temperature: 0.6,
             max_tokens: 800,
-            timeout: optimizedConfig.timeout,
           });
         },
         'optimized_package_formatting',
@@ -779,14 +774,14 @@ Present maximum 5 packages with personalized language and compelling calls-to-ac
   }
 
   // Context management
-  private getOrCreateContext(conversationId: string, sessionId: string, userId?: string): ConversationContext {
-    const existing = this.conversations.get(conversationId);
+  private getOrCreateContext(sessionId: string, userId?: string): ConversationContext {
+    const existing = this.conversations.get(sessionId);
     if (existing) {
       return existing;
     }
 
     const newContext: ConversationContext = {
-      id: conversationId,
+      id: generateId(),
       userId,
       sessionId,
       state: ConversationState.INITIATED,
@@ -800,12 +795,12 @@ Present maximum 5 packages with personalized language and compelling calls-to-ac
       },
     };
 
-    this.conversations.set(conversationId, newContext);
+    this.conversations.set(sessionId, newContext);
     return newContext;
   }
 
   // Utility methods
-  private getFallbackPackageResponse(packages: any[], destination: string | null, duration: number | null): string {
+  private getFallbackPackageResponse(packages: any[], destination: string, duration: number): string {
     const packageCount = packages.length;
     const topPackages = packages.slice(0, 3);
     
@@ -860,14 +855,15 @@ Present maximum 5 packages with personalized language and compelling calls-to-ac
 export const optimizedAIProcessor = new OptimizedAIProcessor();
 
 // Backward compatibility function
-export async function processWithOptimizedAI(messages: any[]): Promise<string> {
+export async function processWithOptimizedAI(messages: any[], sessionId?: string): Promise<string> {
+  const conversationId = generateId();
   const formattedMessages: Message[] = messages.map(m => ({
     role: m.role,
     content: m.content,
     timestamp: new Date(),
     messageId: generateId(),
-    conversationId: generateId(),
+    conversationId: conversationId,
   }));
 
-  return optimizedAIProcessor.processWithOptimizedAI(formattedMessages);
+  return optimizedAIProcessor.processWithOptimizedAI(formattedMessages, sessionId);
 }

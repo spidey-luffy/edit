@@ -20,9 +20,9 @@ export interface Message {
 // Enhanced trip intent with validation
 export const TripIntentSchema = z.object({
   intent: z.enum(['get_packages', 'ask_general', 'get_pricing', 'get_details', 'customize_package', 'unknown']),
-  destination: z.string().nullable(),
-  duration: z.number().min(1).max(30).nullable(),
-  planType: z.string().nullable(),
+  destination: z.string().optional(),
+  duration: z.number().min(1).max(30).optional(),
+  planType: z.string().optional(),
   budget: z.object({
     min: z.number().optional(),
     max: z.number().optional(),
