@@ -12,7 +12,6 @@ import {
   ConversationContext,
   generateId 
 } from '../types/agent-types';
-import { generateId } from '../types/agent-types';
 import { logger, LogCategory } from '../logging/comprehensive-logger';
 import { errorHandler, ErrorCategory, ErrorSeverity } from '../error-handling/enhanced-error-handler';
 import { retryAIOperation } from '../error-handling/advanced-retry-mechanisms';
