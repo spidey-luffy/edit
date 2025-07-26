@@ -265,7 +265,7 @@ export default function ChatInterface() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/ai-agent', {
+      const response = await fetch('/api/multi-agent', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -273,8 +273,13 @@ export default function ChatInterface() {
         body: JSON.stringify({
           messages: [...messages, userMessage].map(m => ({
             role: m.role,
-            content: m.content
-          }))
+            content: m.content,
+            timestamp: m.timestamp.toISOString(),
+            messageId: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            conversationId: `conv_${sessionStorage.getItem('conversationId') || Date.now()}`
+          })),
+          sessionId: sessionStorage.getItem('sessionId') || `session_${Date.now()}`,
+          userId: 'user_anonymous'
         }),
       });
 
