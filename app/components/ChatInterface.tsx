@@ -289,11 +289,22 @@ export default function ChatInterface() {
 
       const data = await response.json();
 
+      // Store session ID for conversation continuity
+      if (data.sessionId) {
+        sessionStorage.setItem('sessionId', data.sessionId);
+      }
+
       const assistantMessage: Message = {
         role: 'assistant',
         content: data.response || ' **Service Briefly Offline**\n\nPlease try again in a moment!\n\n✨ *Amazing trips are worth the wait* 🌟',
-        timestamp: new Date()
+        timestamp: new Date(),
+        isWelcome: false
       };
+
+      // Add metadata if available
+      if (data.agentUsed) {
+        console.log(`🤖 Response from ${data.agentUsed} agent (confidence: ${data.confidence})`);
+      }
 
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
