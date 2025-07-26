@@ -1,14 +1,14 @@
 // Multi-Agent Coordinator - Main interface for the multi-agent system
 import { 
+  TaskResult,
+  TaskPriority
+} from './base-agent';
+import {
   Message,
   ConversationContext,
   ConversationState,
   generateId 
 } from '../types/agent-types';
-import { 
-  TaskResult,
-  TaskPriority
-} from './base-agent';
 import { agentRegistry, AgentRegistry } from './agent-registry';
 import { logger, LogCategory } from '../logging/comprehensive-logger';
 import { errorHandler, ErrorCategory, ErrorSeverity } from '../error-handling/enhanced-error-handler';
