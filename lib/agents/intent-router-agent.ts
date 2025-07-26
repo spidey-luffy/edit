@@ -10,9 +10,6 @@ import {
   AgentCapability,
   Message,
   ConversationContext,
-  generateId 
-} from '../types/agent-types';
-import { 
   TripIntent, 
   TripIntentSchema,
   validateTripIntent,
