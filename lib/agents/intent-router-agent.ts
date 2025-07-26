@@ -2,13 +2,16 @@
 import OpenAI from "openai";
 import { 
   BaseAgent, 
-  AgentType, 
-  AgentCapability,
-  Message,
-  ConversationContext,
   TaskResult,
   TaskPriority
 } from './base-agent';
+import { 
+  AgentType,
+  AgentCapability,
+  Message,
+  ConversationContext,
+  generateId 
+} from '../types/agent-types';
 import { 
   TripIntent, 
   TripIntentSchema,
