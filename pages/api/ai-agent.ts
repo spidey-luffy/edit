@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { processWithai } from '../../lib/ai/enhanced-ai';
+import { processWithOptimizedAI } from '../../lib/ai/optimized-ai-processor';
 
 // Updated to use enhanced AI system while maintaining backward compatibility
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -15,11 +15,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Use enhanced AI processor with backward compatibility
-    const response = await processWithai(messages);
+    const response = await processWithOptimizedAI(messages);
     
     res.status(200).json({ 
       response,
-      version: '2.0.0-phase1-compat'
+      version: '2.1.0-optimized-compat'
     });
   } catch (error) {
     console.error('AI Agent error:', error);
