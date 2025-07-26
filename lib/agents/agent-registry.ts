@@ -1,12 +1,16 @@
 // Agent Registry - Manages all agents and routing between them
 import { 
   BaseAgent, 
-  AgentType, 
-  Message,
-  ConversationContext,
   TaskResult,
   TaskPriority
 } from './base-agent';
+import { 
+  AgentType,
+  AgentCapability,
+  Message,
+  ConversationContext,
+  generateId 
+} from '../types/agent-types';
 import { IntentRouterAgent, intentRouterAgent, RouteDecision } from './intent-router-agent';
 import { CustomerSupportAgent, customerSupportAgent } from './customer-support-agent';
 import { generateId } from '../types/agent-types';
