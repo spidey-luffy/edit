@@ -70,7 +70,33 @@ export interface Agent {
   };
 }
 
-// Agent roles enum for type safety
+// Agent types enum for multi-agent system
+export enum AgentType {
+  INTENT_ROUTER = 'intent_router',
+  CUSTOMER_SUPPORT = 'customer_support',
+  TRAVEL_MATCHING = 'travel_matching', 
+  PACKAGE_CUSTOMIZATION = 'package_customization',
+  BOOKING_ASSISTANCE = 'booking_assistance',
+  GENERAL = 'general',
+}
+
+// Agent capabilities for skill mapping
+export enum AgentCapability {
+  INTENT_ANALYSIS = 'intent_analysis',
+  QUERY_ROUTING = 'query_routing',
+  FAQ_HANDLING = 'faq_handling',
+  GENERAL_SUPPORT = 'general_support',
+  PACKAGE_SEARCH = 'package_search',
+  TRAVEL_RECOMMENDATION = 'travel_recommendation',
+  INFORMATION_RETRIEVAL = 'information_retrieval',
+  CONTEXT_AWARENESS = 'context_awareness',
+  CONTEXT_ANALYSIS = 'context_analysis',
+  CUSTOMIZATION = 'customization',
+  BOOKING_PROCESSING = 'booking_processing',
+  PAYMENT_HANDLING = 'payment_handling',
+}
+
+// Legacy enum for backward compatibility
 export enum AgentRole {
   SUPERVISOR = 'supervisor',
   CUSTOMER_SUPPORT = 'customer_support',
