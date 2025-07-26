@@ -320,7 +320,8 @@ export default function ChatInterface() {
       const errorMessage: Message = {
         role: 'assistant',
         content: '🔌 **Connection Interrupted** 🔌\n\n## 🎯 Network Connectivity Issue\n\nI\'m experiencing difficulty connecting to our travel intelligence database. This is typically a brief network interruption.\n\n### 🛠️ **Recommended Actions:**\n\n• **🔄 Page Refresh** - Reload the application\n• **📝 Retry Request** - Rephrase your travel query  \n• **🌐 Network Check** - Verify your internet connection\n• **⏰ Brief Wait** - Network issues often resolve quickly\n\n### 📞 **Alternative Options:**\n• Contact our travel consultants directly\n• Visit our website for destination guides\n• Check back in a few minutes\n\n**I\'ll be back to crafting perfect travel experiences shortly!** ✨\n\n*TripXplo AI - Your Premium Travel Intelligence*',
-        timestamp: new Date()
+        timestamp: new Date(),
+        isWelcome: false
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
