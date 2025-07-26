@@ -48,6 +48,14 @@ export default function ChatInterface() {
   };
 
   useEffect(() => {
+    // Initialize session ID for conversation continuity
+    if (!sessionStorage.getItem('sessionId')) {
+      sessionStorage.setItem('sessionId', `session_${Date.now()}`);
+    }
+    if (!sessionStorage.getItem('conversationId')) {
+      sessionStorage.setItem('conversationId', `conv_${Date.now()}`);
+    }
+
     // Load messages from localStorage on initial render
     const savedMessages = localStorage.getItem('chatMessages');
     if (savedMessages) {
