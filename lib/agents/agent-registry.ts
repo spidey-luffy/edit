@@ -13,7 +13,6 @@ import {
 } from '../types/agent-types';
 import { IntentRouterAgent, intentRouterAgent, RouteDecision } from './intent-router-agent';
 import { CustomerSupportAgent, customerSupportAgent } from './customer-support-agent';
-import { generateId } from '../types/agent-types';
 import { logger, LogCategory } from '../logging/comprehensive-logger';
 import { errorHandler, ErrorCategory, ErrorSeverity } from '../error-handling/enhanced-error-handler';
 
