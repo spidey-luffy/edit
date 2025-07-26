@@ -189,6 +189,7 @@ export enum ConversationState {
   CUSTOMIZATION = 'customization',
   BOOKING = 'booking',
   COMPLETED = 'completed',
+  ACTIVE = 'active',
   ERROR = 'error',
 }
 
